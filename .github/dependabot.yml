@@ -5,6 +5,12 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    # Les bumps majeurs (zod 4, mongoose 9, @fastify/* 11…) sont des migrations
+    # délibérées, pas des updates automatiques. Dependabot ne propose que
+    # patch/minor — toujours verts au CI.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       dev-dependencies:
         dependency-type: development
