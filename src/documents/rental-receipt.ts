@@ -4,9 +4,10 @@
 // ──────────────────────────────────────────────
 
 import {
-  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  AlignmentType, BorderStyle, WidthType, ShadingType, HeadingLevel,
+  Document, Packer, Paragraph, TextRun, Table,
+  AlignmentType, WidthType, HeadingLevel,
 } from 'docx'
+import { makeRow } from './docx-helpers.js'
 
 interface RentalReceiptData {
   format: 'docx' | 'pdf'
@@ -31,9 +32,6 @@ export async function generateRentalReceipt(data: RentalReceiptData): Promise<Bu
 
 async function generateDocx(data: RentalReceiptData): Promise<Buffer> {
   const total = data.monthlyRent + data.charges
-  const border = { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' }
-  const borders = { top: border, bottom: border, left: border, right: border }
-  const cellMargins = { top: 60, bottom: 60, left: 100, right: 100 }
 
   const doc = new Document({
     styles: {
@@ -79,9 +77,9 @@ async function generateDocx(data: RentalReceiptData): Promise<Buffer> {
           width: { size: 9026, type: WidthType.DXA },
           columnWidths: [5500, 3526],
           rows: [
-            makeRow('Loyer', `${data.monthlyRent.toFixed(2)} €`, borders, cellMargins, 'D5E8F0'),
-            makeRow('Charges', `${data.charges.toFixed(2)} €`, borders, cellMargins),
-            makeRow('TOTAL', `${total.toFixed(2)} €`, borders, cellMargins, 'E8F5E9', true),
+            makeRow('Loyer', `${data.monthlyRent.toFixed(2)} €`, 'D5E8F0'),
+            makeRow('Charges', `${data.charges.toFixed(2)} €`),
+            makeRow('TOTAL', `${total.toFixed(2)} €`, 'E8F5E9', true),
           ],
         }),
 
@@ -124,37 +122,6 @@ async function generateDocx(data: RentalReceiptData): Promise<Buffer> {
 
   const buffer = await Packer.toBuffer(doc)
   return Buffer.from(buffer)
-}
-
-function makeRow(
-  label: string,
-  value: string,
-  borders: Record<string, unknown>,
-  margins: Record<string, number>,
-  fill?: string,
-  bold = false,
-): TableRow {
-  return new TableRow({
-    children: [
-      new TableCell({
-        borders: borders as never,
-        width: { size: 5500, type: WidthType.DXA },
-        margins,
-        ...(fill ? { shading: { fill, type: ShadingType.CLEAR } } : {}),
-        children: [new Paragraph({ children: [new TextRun({ text: label, bold })] })],
-      }),
-      new TableCell({
-        borders: borders as never,
-        width: { size: 3526, type: WidthType.DXA },
-        margins,
-        ...(fill ? { shading: { fill, type: ShadingType.CLEAR } } : {}),
-        children: [new Paragraph({
-          alignment: AlignmentType.RIGHT,
-          children: [new TextRun({ text: value, bold })],
-        })],
-      }),
-    ],
-  })
 }
 
 // ── PDF ──

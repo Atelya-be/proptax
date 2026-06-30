@@ -10,6 +10,7 @@ import type {
 } from '../types.js'
 import { REGISTRATION_RATES } from '../data/registration-rates.js'
 import { CalculationError } from '../errors.js'
+import { round } from '../round.js'
 
 /**
  * Calcule les droits d'enregistrement pour un achat immobilier en Belgique.
@@ -47,7 +48,7 @@ function calculateWallonia(
   const appliedRate = isReduced ? rates.reducedRate : rates.standardRate
   const abatement = input.isOnlyHome ? rates.abatement : 0
   const taxableBase = Math.max(0, input.purchasePrice - abatement)
-  const amount = round2(taxableBase * (appliedRate / 100))
+  const amount = round(taxableBase * (appliedRate / 100))
 
   const breakdown: RegistrationFeesBreakdown = {
     baseRate: rates.standardRate,
@@ -58,7 +59,7 @@ function calculateWallonia(
 
   return {
     amount,
-    effectiveRate: input.purchasePrice > 0 ? round4((amount / input.purchasePrice) * 100) : 0,
+    effectiveRate: input.purchasePrice > 0 ? round((amount / input.purchasePrice) * 100, 4) : 0,
     nominalRate: appliedRate,
     abatement,
     taxableBase,
@@ -75,7 +76,7 @@ function calculateFlanders(
   const appliedRate = isReduced ? rates.reducedRate : rates.standardRate
   // Pas d'abattement en Flandre — le taux réduit s'applique sur le prix total
   const taxableBase = input.purchasePrice
-  const amount = round2(taxableBase * (appliedRate / 100))
+  const amount = round(taxableBase * (appliedRate / 100))
 
   const breakdown: RegistrationFeesBreakdown = {
     baseRate: rates.standardRate,
@@ -86,7 +87,7 @@ function calculateFlanders(
 
   return {
     amount,
-    effectiveRate: input.purchasePrice > 0 ? round4((amount / input.purchasePrice) * 100) : 0,
+    effectiveRate: input.purchasePrice > 0 ? round((amount / input.purchasePrice) * 100, 4) : 0,
     nominalRate: appliedRate,
     abatement: 0,
     taxableBase,
@@ -109,7 +110,7 @@ function calculateBrussels(
 
   const abatement = eligibleForAbatement ? rates.abatement : 0
   const taxableBase = Math.max(0, input.purchasePrice - abatement)
-  const amount = round2(taxableBase * (appliedRate / 100))
+  const amount = round(taxableBase * (appliedRate / 100))
 
   const breakdown: RegistrationFeesBreakdown = {
     baseRate: rates.standardRate,
@@ -122,19 +123,11 @@ function calculateBrussels(
 
   return {
     amount,
-    effectiveRate: input.purchasePrice > 0 ? round4((amount / input.purchasePrice) * 100) : 0,
+    effectiveRate: input.purchasePrice > 0 ? round((amount / input.purchasePrice) * 100, 4) : 0,
     nominalRate: appliedRate,
     abatement,
     taxableBase,
     region: 'bruxelles',
     breakdown,
   }
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100
-}
-
-function round4(n: number): number {
-  return Math.round(n * 10000) / 10000
 }

@@ -5,6 +5,7 @@
 
 import type { IndexationInput, IndexationResult } from '../types.js'
 import { CalculationError } from '../errors.js'
+import { round } from '../round.js'
 
 /**
  * Calcule le loyer indexé selon la formule belge.
@@ -40,9 +41,9 @@ export function calculateIndexation(input: IndexationInput): IndexationResult {
   }
 
   const ratio = input.newIndex / input.startIndex
-  const indexedRent = round2(input.baseRent * ratio)
-  const difference = round2(indexedRent - input.baseRent)
-  const percentageIncrease = round4(((ratio - 1) * 100))
+  const indexedRent = round(input.baseRent * ratio)
+  const difference = round(indexedRent - input.baseRent)
+  const percentageIncrease = round((ratio - 1) * 100, 4)
 
   return {
     indexedRent,
@@ -52,12 +53,4 @@ export function calculateIndexation(input: IndexationInput): IndexationResult {
     newIndex: input.newIndex,
     formula: `${input.baseRent} × (${input.newIndex} / ${input.startIndex}) = ${indexedRent}`,
   }
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100
-}
-
-function round4(n: number): number {
-  return Math.round(n * 10000) / 10000
 }

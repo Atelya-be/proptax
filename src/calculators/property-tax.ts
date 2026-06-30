@@ -13,6 +13,7 @@ import {
   getProvinceByPostalCode,
 } from '../data/rc-coefficients.js'
 import { CalculationError } from '../errors.js'
+import { round } from '../round.js'
 
 /**
  * Calcule le précompte immobilier belge.
@@ -56,10 +57,10 @@ export function calculatePropertyTax(input: PropertyTaxInput): PropertyTaxResult
     2000
 
   // 5. Calcul
-  const regionalTax = round2(rcResult.indexedIncome * (regionalRate / 100))
-  const provincialTax = round2(regionalTax * (provincialCentimes / 100))
-  const municipalTax = round2(regionalTax * (municipalCentimes / 100))
-  const totalTax = round2(regionalTax + provincialTax + municipalTax)
+  const regionalTax = round(rcResult.indexedIncome * (regionalRate / 100))
+  const provincialTax = round(regionalTax * (provincialCentimes / 100))
+  const municipalTax = round(regionalTax * (municipalCentimes / 100))
+  const totalTax = round(regionalTax + provincialTax + municipalTax)
 
   return {
     totalTax,
@@ -96,8 +97,4 @@ function getMunicipalityName(postalCode: string): string | undefined {
     '3000': 'Louvain', '2800': 'Malines', '3500': 'Hasselt',
   }
   return NAMES[postalCode]
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100
 }

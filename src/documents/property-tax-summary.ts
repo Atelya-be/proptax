@@ -4,11 +4,12 @@
 // ──────────────────────────────────────────────
 
 import {
-  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  AlignmentType, BorderStyle, WidthType, ShadingType, HeadingLevel,
+  Document, Packer, Paragraph, TextRun, Table,
+  AlignmentType, WidthType, HeadingLevel,
 } from 'docx'
 import { calculatePropertyTax } from '../calculators/property-tax.js'
 import type { BelgianRegion } from '../types.js'
+import { makeRow, REGION_LABELS } from './docx-helpers.js'
 
 interface PropertyTaxSummaryData {
   format: 'docx' | 'pdf'
@@ -38,11 +39,7 @@ export async function generatePropertyTaxSummary(data: PropertyTaxSummaryData): 
 // ── DOCX ──
 
 async function generateDocx(data: PropertyTaxSummaryData, result: ReturnType<typeof calculatePropertyTax>): Promise<Buffer> {
-  const border = { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' }
-  const borders = { top: border, bottom: border, left: border, right: border }
-  const cellMargins = { top: 60, bottom: 60, left: 100, right: 100 }
-
-  const regionLabel = { wallonie: 'Wallonie', flandre: 'Flandre', bruxelles: 'Bruxelles' }[data.region]
+  const regionLabel = REGION_LABELS[data.region]
 
   const doc = new Document({
     styles: {
@@ -94,11 +91,11 @@ async function generateDocx(data: PropertyTaxSummaryData, result: ReturnType<typ
           width: { size: 9026, type: WidthType.DXA },
           columnWidths: [5500, 3526],
           rows: [
-            makeRow('Taux régional', `${result.regionalRate}%`, borders, cellMargins, 'E3F2FD'),
-            makeRow('Part régionale', `${result.regionalTax.toFixed(2)} €`, borders, cellMargins),
-            makeRow(`Centimes provinciaux (${result.provincialCentimes})`, `${result.provincialTax.toFixed(2)} €`, borders, cellMargins),
-            makeRow(`Centimes communaux (${result.municipalCentimes})`, `${result.municipalTax.toFixed(2)} €`, borders, cellMargins),
-            makeRow('TOTAL PRÉCOMPTE', `${result.totalTax.toFixed(2)} €`, borders, cellMargins, 'C8E6C9', true),
+            makeRow('Taux régional', `${result.regionalRate}%`, 'E3F2FD'),
+            makeRow('Part régionale', `${result.regionalTax.toFixed(2)} €`),
+            makeRow(`Centimes provinciaux (${result.provincialCentimes})`, `${result.provincialTax.toFixed(2)} €`),
+            makeRow(`Centimes communaux (${result.municipalCentimes})`, `${result.municipalTax.toFixed(2)} €`),
+            makeRow('TOTAL PRÉCOMPTE', `${result.totalTax.toFixed(2)} €`, 'C8E6C9', true),
           ],
         }),
 
@@ -154,42 +151,11 @@ function infoParagraph(label: string, value: string): Paragraph {
   })
 }
 
-function makeRow(
-  label: string,
-  value: string,
-  borders: Record<string, unknown>,
-  margins: Record<string, number>,
-  fill?: string,
-  bold = false,
-): TableRow {
-  return new TableRow({
-    children: [
-      new TableCell({
-        borders: borders as never,
-        width: { size: 5500, type: WidthType.DXA },
-        margins,
-        ...(fill ? { shading: { fill, type: ShadingType.CLEAR } } : {}),
-        children: [new Paragraph({ children: [new TextRun({ text: label, bold })] })],
-      }),
-      new TableCell({
-        borders: borders as never,
-        width: { size: 3526, type: WidthType.DXA },
-        margins,
-        ...(fill ? { shading: { fill, type: ShadingType.CLEAR } } : {}),
-        children: [new Paragraph({
-          alignment: AlignmentType.RIGHT,
-          children: [new TextRun({ text: value, bold })],
-        })],
-      }),
-    ],
-  })
-}
-
 // ── PDF ──
 
 async function generatePdf(data: PropertyTaxSummaryData, result: ReturnType<typeof calculatePropertyTax>): Promise<Buffer> {
   const PDFDocument = (await import('pdfkit')).default
-  const regionLabel = { wallonie: 'Wallonie', flandre: 'Flandre', bruxelles: 'Bruxelles' }[data.region]
+  const regionLabel = REGION_LABELS[data.region]
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 50 })

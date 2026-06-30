@@ -6,6 +6,7 @@
 import type { CadastralIncomeInput, CadastralIncomeResult } from '../types.js'
 import { RC_INDEX_COEFFICIENTS } from '../data/rc-coefficients.js'
 import { FiscalYearNotSupportedError, CalculationError } from '../errors.js'
+import { round } from '../round.js'
 
 /**
  * Calcule le revenu cadastral indexé pour une année fiscale.
@@ -32,7 +33,7 @@ export function calculateCadastralIncome(input: CadastralIncomeInput): Cadastral
     })
   }
 
-  const indexedIncome = round2(input.baseCadastralIncome * coefficient)
+  const indexedIncome = round(input.baseCadastralIncome * coefficient)
 
   return {
     indexedIncome,
@@ -41,8 +42,4 @@ export function calculateCadastralIncome(input: CadastralIncomeInput): Cadastral
     baseCadastralIncome: input.baseCadastralIncome,
     source: `SPF Finances — Coefficient d'indexation ${input.fiscalYear} : ${coefficient}`,
   }
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100
 }

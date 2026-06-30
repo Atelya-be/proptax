@@ -5,6 +5,7 @@
 
 import type { CapitalGainsInput, CapitalGainsResult, CapitalGainsBreakdown } from '../types.js'
 import { CalculationError } from '../errors.js'
+import { round } from '../round.js'
 
 /**
  * Forfait appliqué sur le prix d'achat si les frais réels
@@ -99,12 +100,12 @@ function calculateSpeculativeGain(
   holdingYears: number,
 ): CapitalGainsResult {
   // Prix d'achat majoré : frais réels OU forfait 25%
-  const acquisitionCostsForfait = round2(input.purchasePrice * ACQUISITION_COST_FORFAIT_RATE)
+  const acquisitionCostsForfait = round(input.purchasePrice * ACQUISITION_COST_FORFAIT_RATE)
   const effectiveAcquisitionCosts = Math.max(input.acquisitionCosts, acquisitionCostsForfait)
 
   // Travaux : montant réel OU forfait 5%/an (si détenu > 5 ans uniquement, sinon 0)
   const renovationCostsForfait = holdingYears >= 5
-    ? round2(input.purchasePrice * RENOVATION_FORFAIT_RATE_PER_YEAR * holdingYears)
+    ? round(input.purchasePrice * RENOVATION_FORFAIT_RATE_PER_YEAR * holdingYears)
     : 0
   const effectiveRenovationCosts = Math.max(input.renovationCosts, renovationCostsForfait)
 
@@ -113,7 +114,7 @@ function calculateSpeculativeGain(
   const taxableGain = Math.max(0, input.salePrice - adjustedPurchasePrice)
 
   const taxRate = holdingYears < 5 ? TAX_RATE_SPECULATIVE : TAX_RATE_STANDARD
-  const estimatedTax = round2(taxableGain * (taxRate / 100))
+  const estimatedTax = round(taxableGain * (taxRate / 100))
 
   return {
     grossGain,
@@ -136,8 +137,4 @@ function calculateSpeculativeGain(
 function yearsDiff(start: Date, end: Date): number {
   const ms = end.getTime() - start.getTime()
   return Math.floor(ms / (365.25 * 24 * 60 * 60 * 1000))
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100
 }

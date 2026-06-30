@@ -5,6 +5,7 @@
 
 import type { RentalGuaranteeInput, RentalGuaranteeResult, GuaranteeType } from '../types.js'
 import { CalculationError } from '../errors.js'
+import { round } from '../round.js'
 
 /**
  * Nombre maximum de mois de loyer par type de garantie.
@@ -52,7 +53,7 @@ export function calculateRentalGuarantee(input: RentalGuaranteeInput): RentalGua
     )
   }
 
-  const maxAmount = round2(input.monthlyRent * maxMonths)
+  const maxAmount = round(input.monthlyRent * maxMonths)
   const notes: string[] = []
 
   switch (input.guaranteeType) {
@@ -84,8 +85,4 @@ export function calculateRentalGuarantee(input: RentalGuaranteeInput): RentalGua
     legalBasis: LEGAL_BASIS[input.guaranteeType],
     notes,
   }
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100
 }
