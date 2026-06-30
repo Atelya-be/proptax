@@ -6,6 +6,7 @@
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import helmet from '@fastify/helmet'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
 import rateLimit from '@fastify/rate-limit'
@@ -22,6 +23,10 @@ const LOG_LEVEL = process.env.LOG_LEVEL ?? 'info'
 
 export async function buildServer() {
   const app = Fastify({
+    // Derrière un reverse-proxy / ingress : fait confiance aux en-têtes
+    // X-Forwarded-* pour résoudre req.ip (sinon le fallback rate-limit
+    // s'effondre sur l'IP unique du proxy).
+    trustProxy: true,
     logger: {
       level: LOG_LEVEL,
       transport:
@@ -33,7 +38,15 @@ export async function buildServer() {
 
   // ── Plugins ──
 
-  await app.register(cors, { origin: true })
+  // Headers de sécurité (HSTS, noSniff, frameguard, referrer-policy…).
+  // CSP désactivée car Swagger UI charge des scripts/styles inline sur /docs.
+  await app.register(helmet, { contentSecurityPolicy: false })
+
+  // CORS : allowlist via CORS_ORIGINS (CSV), sinon réflexion ouverte (API publique).
+  const corsOrigins = process.env.CORS_ORIGINS
+  await app.register(cors, {
+    origin: corsOrigins ? corsOrigins.split(',').map((o) => o.trim()).filter(Boolean) : true,
+  })
 
   await app.register(rateLimit, {
     max: Number(process.env.RATE_LIMIT_MAX ?? 100),
