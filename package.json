@@ -16,16 +16,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fastify/cors": "^10.0.0",
+    "@fastify/cors": "^11.2.0",
     "@fastify/helmet": "^13.0.2",
-    "@fastify/rate-limit": "^10.0.0",
+    "@fastify/rate-limit": "^11.1.0",
     "@fastify/swagger": "^9.0.0",
-    "@fastify/swagger-ui": "^5.0.0",
-    "docx": "^9.0.0",
+    "@fastify/swagger-ui": "^6.0.0",
+    "docx": "^9.7.1",
     "fastify": "^5.0.0",
-    "mongoose": "^8.0.0",
-    "pdfkit": "^0.15.0",
-    "zod": "^3.23.0"
+    "mongoose": "^9.7.3",
+    "pdfkit": "^0.19.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
