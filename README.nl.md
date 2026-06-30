@@ -6,6 +6,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+> ⚠️ **Disclaimer** — PropTax Engine levert **indicatieve** fiscale schattingen op basis van publieke Belgische referentiegegevens. Dit is **geen** fiscaal of juridisch advies. Tarieven, coëfficiënten en opcentiemen evolueren: verifieer altijd bij de officiële bron (FOD Financiën, Vlabel, SPW Fiscaliteit) vóór elk reëel gebruik.
+
 ## Wat is PropTax Engine?
 
 PropTax Engine is een zelfstandige REST API die Belgische vastgoedbelastingen en -kosten berekent. Gebouwd om geïntegreerd te worden in vastgoed-CRM's (Whise, Zoho), makelaarsportalen of elk systeem dat Belgische vastgoedfiscale berekeningen nodig heeft.

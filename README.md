@@ -6,6 +6,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+> ⚠️ **Avertissement** — PropTax Engine fournit des estimations fiscales **indicatives** à partir de données de référence publiques belges. Ce n'est **pas** un conseil fiscal ou juridique. Les taux, coefficients et centimes additionnels évoluent : vérifiez toujours auprès de la source officielle (SPF Finances, Vlabel, SPW Fiscalité) avant tout usage réel.
+
 ## Qu'est-ce que PropTax Engine ?
 
 PropTax Engine est une API REST autonome qui calcule les taxes et frais immobiliers belges. Conçue pour être intégrée dans les CRM immobiliers (Whise, Zoho), portails d'agences, ou tout système nécessitant des calculs fiscaux immobiliers belges.

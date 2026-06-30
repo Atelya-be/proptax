@@ -6,6 +6,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+> ⚠️ **Disclaimer** — PropTax Engine provides **indicative** tax estimates from public Belgian reference data. It is **not** fiscal or legal advice. Rates, coefficients and surcharges change over time: always verify against the official source (SPF Finances, Vlabel, SPW Fiscalité) before any real-world use.
+
 ## What is PropTax Engine?
 
 PropTax Engine is a standalone REST API that calculates Belgian real-estate taxes and fees. Built to be integrated into real-estate CRMs (Whise, Zoho), agency portals, or any system that needs Belgian property-tax calculations.

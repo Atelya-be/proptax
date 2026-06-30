@@ -3,9 +3,25 @@
 // CRUD pour dossiers immobiliers
 // ──────────────────────────────────────────────
 
-import type { FastifyInstance } from 'fastify'
+import type { FastifyInstance, FastifyReply } from 'fastify'
 import { z } from 'zod'
+import { isValidObjectId } from 'mongoose'
 import { Dossier, type IDossier } from '../dossiers/model.js'
+
+/**
+ * Garde un ObjectId Mongo valide. Renvoie une réponse 400 (au lieu de
+ * laisser Mongoose lever un CastError → 500) si l'id est malformé.
+ * Retourne true si l'id est invalide (la réponse a déjà été envoyée).
+ */
+function rejectInvalidId(id: string, reply: FastifyReply): boolean {
+  if (isValidObjectId(id)) return false
+  reply.status(400).send({
+    error: 'INVALID_ID',
+    message: `Identifiant de dossier invalide : "${id}"`,
+    statusCode: 400,
+  })
+  return true
+}
 
 const createDossierSchema = z.object({
   reference: z.string().min(1),
@@ -109,6 +125,7 @@ export async function registerDossierRoutes(app: FastifyInstance): Promise<void>
     },
   }, async (request, reply) => {
     const { id } = request.params as { id: string }
+    if (rejectInvalidId(id, reply)) return
     const dossier = await Dossier.findById(id).lean()
 
     if (!dossier) {
@@ -144,6 +161,7 @@ export async function registerDossierRoutes(app: FastifyInstance): Promise<void>
     },
   }, async (request, reply) => {
     const { id } = request.params as { id: string }
+    if (rejectInvalidId(id, reply)) return
     const data = updateDossierSchema.parse(request.body)
 
     const dossier = await Dossier.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true }).lean()
@@ -168,6 +186,7 @@ export async function registerDossierRoutes(app: FastifyInstance): Promise<void>
     },
   }, async (request, reply) => {
     const { id } = request.params as { id: string }
+    if (rejectInvalidId(id, reply)) return
     const dossier = await Dossier.findByIdAndDelete(id)
 
     if (!dossier) {
@@ -191,6 +210,7 @@ export async function registerDossierRoutes(app: FastifyInstance): Promise<void>
     },
   }, async (request, reply) => {
     const { id } = request.params as { id: string }
+    if (rejectInvalidId(id, reply)) return
     const body = z.object({
       type: z.string(),
       input: z.record(z.unknown()),
