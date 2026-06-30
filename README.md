@@ -2,6 +2,8 @@
 
 > Moteur de calcul fiscal immobilier belge — API headless open source (MIT)
 
+🌐 **Français** · [English](README.en.md) · [Nederlands](README.nl.md) · [Deutsch](README.de.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Qu'est-ce que PropTax Engine ?
