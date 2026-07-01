@@ -1,0 +1,63 @@
+# PropTax Engine — déploiement démo (mode dégradé : sans MongoDB, sans API_KEYS)
+# Exposé en lecture publique sous atelya.io/proptax (rate-limité côté Fastify).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proptax-engine
+  namespace: atelya
+  labels:
+    app: proptax-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proptax-engine
+  template:
+    metadata:
+      labels:
+        app: proptax-engine
+    spec:
+      imagePullSecrets:
+        - name: registry-pull-secret
+      containers:
+        - name: app
+          image: registry.cloud.it-transform.be/proptax/app:latest
+          ports:
+            - containerPort: 3400
+          env:
+            - { name: PORT, value: "3400" }
+            - { name: HOST, value: "0.0.0.0" }
+            - { name: NODE_ENV, value: "production" }
+            - { name: LOG_LEVEL, value: "info" }
+            - { name: RATE_LIMIT_MAX, value: "60" }
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3400
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3400
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "20m"
+            limits:
+              memory: "192Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proptax-engine
+  namespace: atelya
+spec:
+  selector:
+    app: proptax-engine
+  ports:
+    - port: 3400
+      targetPort: 3400

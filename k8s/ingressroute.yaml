@@ -1,0 +1,31 @@
+# Route atelya.io/proptax/* -> proptax-engine (strip /proptax avant de transmettre au moteur).
+# Réutilise le certificat atelya-tls. Même origine que la landing -> zéro CORS pour le popup.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: proptax-stripprefix
+  namespace: atelya
+spec:
+  stripPrefix:
+    prefixes:
+      - /proptax
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proptax-api
+  namespace: atelya
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: (Host(`atelya.io`) || Host(`www.atelya.io`) || Host(`atelya.be`) || Host(`www.atelya.be`)) && PathPrefix(`/proptax/`)
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: proptax-stripprefix
+      services:
+        - name: proptax-engine
+          port: 3400
+  tls:
+    secretName: atelya-tls
