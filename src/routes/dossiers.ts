@@ -7,6 +7,7 @@ import type { FastifyInstance, FastifyReply } from 'fastify'
 import { z } from 'zod'
 import { isValidObjectId } from 'mongoose'
 import { Dossier, type IDossier } from '../dossiers/model.js'
+import { requireApiKey } from '../middleware/api-key-auth.js'
 
 /**
  * Garde un ObjectId Mongo valide. Renvoie une réponse 400 (au lieu de
@@ -74,6 +75,9 @@ const querySchema = z.object({
 })
 
 export async function registerDossierRoutes(app: FastifyInstance): Promise<void> {
+  // Données persistées : clé API obligatoire, même quand l'auth globale est en mode dev
+  app.addHook('onRequest', requireApiKey)
+
   // ── List / Search ──
 
   app.get('/', {

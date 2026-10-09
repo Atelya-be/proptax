@@ -62,7 +62,8 @@ Swagger documentation: `http://localhost:3400/docs`
 
 ### Authentication
 
-If `API_KEYS` is not set, auth is disabled (dev mode).
+If `API_KEYS` is not set, auth is disabled (dev mode) for the Calcul and Documents layers.
+The Dossiers layer (persisted data) always requires a key: without `API_KEYS`, its routes return `503 AUTH_NOT_CONFIGURED`.
 
 To enable auth:
 

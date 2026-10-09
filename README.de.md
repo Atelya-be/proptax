@@ -62,7 +62,8 @@ Swagger-Dokumentation: `http://localhost:3400/docs`
 
 ### Authentifizierung
 
-Wenn `API_KEYS` nicht gesetzt ist, ist die Authentifizierung deaktiviert (Dev-Modus).
+Wenn `API_KEYS` nicht gesetzt ist, ist die Authentifizierung für die Schichten Calcul und Documents deaktiviert (Dev-Modus).
+Die Dossiers-Schicht (persistierte Daten) verlangt immer einen Schlüssel: ohne `API_KEYS` antworten ihre Routen mit `503 AUTH_NOT_CONFIGURED`.
 
 Authentifizierung aktivieren:
 

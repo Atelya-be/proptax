@@ -63,7 +63,7 @@ Sans `MONGODB_URI`, seules les couches 1 et 2 démarrent.
 
 ## Tests
 
-53 tests couvrant les 7 calculateurs. Lancer : `npm test`
+62 tests : les 7 calculateurs + garde d'auth de la couche Dossiers (fail-closed sans `API_KEYS`). Lancer : `npm test`
 
 ## Dev
 

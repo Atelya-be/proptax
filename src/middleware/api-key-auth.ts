@@ -53,6 +53,35 @@ export async function apiKeyAuth(
     return
   }
 
+  return checkApiKey(request, reply, apiKeys)
+}
+
+/**
+ * Garde strict pour les données persistées (couche Dossiers) : pas de mode dev.
+ * Sans API_KEYS configuré, l'accès est refusé (fail-closed) au lieu d'être ouvert.
+ */
+export async function requireApiKey(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const apiKeys = loadApiKeys()
+
+  if (apiKeys.size === 0) {
+    return reply.status(503).send({
+      error: 'AUTH_NOT_CONFIGURED',
+      message: 'API_KEYS non configuré : la couche Dossiers exige une clé API',
+      statusCode: 503,
+    })
+  }
+
+  return checkApiKey(request, reply, apiKeys)
+}
+
+async function checkApiKey(
+  request: FastifyRequest,
+  reply: FastifyReply,
+  apiKeys: Set<string>,
+): Promise<void> {
   const providedKey = request.headers['x-api-key'] as string | undefined
 
   if (!providedKey) {
