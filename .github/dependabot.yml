@@ -4,6 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    # Attendre 7 jours avant de proposer une version fraîchement publiée
+    # (paquet compromis / retiré). Ne s'applique pas aux security updates.
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 10
     # Les bumps majeurs (zod 4, mongoose 9, @fastify/* 11…) sont des migrations
     # délibérées, pas des updates automatiques. Dependabot ne propose que
@@ -21,8 +25,20 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: docker
     directory: "/"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
+
+  # Maintient le digest épinglé de mongo dans docker-compose.yml
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

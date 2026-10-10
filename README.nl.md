@@ -62,7 +62,8 @@ Swagger-documentatie: `http://localhost:3400/docs`
 
 ### Authenticatie
 
-Als `API_KEYS` niet is ingesteld, is authenticatie uitgeschakeld (dev-modus).
+Als `API_KEYS` niet is ingesteld, is authenticatie uitgeschakeld (dev-modus) voor de lagen Calcul en Documents.
+De Dossiers-laag (opgeslagen gegevens) vereist altijd een sleutel: zonder `API_KEYS` antwoorden de routes met `503 AUTH_NOT_CONFIGURED`.
 
 Authenticatie inschakelen:
 

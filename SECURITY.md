@@ -29,9 +29,11 @@ or mitigation before public disclosure, coordinated with you.
 
 In scope: the engine code (`src/`), the published API surface, the Docker image.
 
-Out of scope: third-party deployments, the optional Dossiers layer when run
-without authentication (`API_KEYS` unset is documented dev-mode behaviour),
-and dev-only dependencies (test tooling not shipped in the runtime image).
+Out of scope: third-party deployments, the stateless Calcul/Documents layers
+when run without authentication (`API_KEYS` unset is documented dev-mode
+behaviour), and dev-only dependencies (test tooling not shipped in the runtime
+image). The Dossiers layer always requires an API key and refuses requests
+(503) when `API_KEYS` is unset.
 
 ## Disclaimer
 
